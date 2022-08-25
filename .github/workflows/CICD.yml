@@ -1,0 +1,46 @@
+## This workflow performs a clean install of Nodejs and yarn. Then builds and deploys the project
+name: Page-Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # specify enviroment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        # Options
+        with:
+          # Node version
+          node-version: 16.x
+          # Cache this? What does this actually cache?
+          cache: 'npm'
+      
+      # Install yarn. Can we potentially include this in the cache?
+      - name: Install yarn
+        run : npm install --location=global yarn
+
+      # Install dependencies
+      - name: Install Dependencies
+        run: yarn
+
+      # Finally start building the project
+      - name: Build Project
+        run: yarn run build
+
+      # Run external gh-pages script to deploy to branch gh-pages
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # This should correspond to transpiler output dir
+          publish_dir: ./release
