@@ -10,13 +10,13 @@ import './App.css';
 // Components
 
 interface CatFact {
-  fact: string;
+  fact: Array<string>;
 };
 
 function App() {
   // State management
-  const [ catFacts, setCatFacts ] = useState("");
-  const [ currentFact, setCurrentFact ] = useState(0);
+  const [ catFacts, setCatFacts ] = useState([]);
+  const [ currentFact, setCurrentFact ] = useState("");
 
   // Get first text
   useEffect(() => {
@@ -29,30 +29,32 @@ function App() {
       const parsed = await response.json();
 
       // Get the interesting bits
-      const newFacts = parsed.data.map((element: CatFact) => element.fact );
+      const newFacts = parsed.data.map((element: CatFact) => element.fact);
 
       // Push to state
       setCatFacts(newFacts);
+      setCurrentFact(newFacts[0]);
     };
-
+    
     // Call function
     fetcher();
   }, []);
-
+  
   /**
-   * Gets a new random fact
+   * Gets a new random fact from locally stored cats
    */
   function updateFact() {
     const length = catFacts.length;
-    const randomInteger = Math.floor(Math.random() * 10);
-    setCurrentFact(randomInteger);
-  };
+    const randomInteger = Math.floor(Math.random() * length);
+    setCurrentFact(catFacts[randomInteger]);
+  }; 
 
 
   return (
     <div className="App">
-      <p>{catFacts[currentFact]}</p>
-      <button onClick={() => updateFact()}>Update</button>
+      <h1>Cat Fact of the day</h1>
+      <p>{currentFact || 'Loading...'}</p>
+      <button onClick={updateFact}>Get New Fact</button>
     </div>
   );
 };
