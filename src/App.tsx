@@ -3,6 +3,7 @@ import {
   useState,
   useEffect,
 } from 'react';
+import axios from 'axios';
 
 // CSS
 import './App.css';
@@ -22,14 +23,14 @@ function App() {
   useEffect(() => {
     // function for fetching data
     const fetcher = async () => {
-      // Fetch
-      const response = await fetch('https://catfact.ninja/facts');
+      // Fetch 
+      const response = await axios.get('https://catfact.ninja/facts')
+      
+      // Get facts
+      const facts = await response.data.data;
 
-      // Parse response
-      const parsed = await response.json();
-
-      // Get the interesting bits
-      const newFacts = parsed.data.map((element: CatFact) => element.fact);
+      // Get the actual fact strings
+      const newFacts = facts.map((element: CatFact) => element.fact);
 
       // Push to state
       setCatFacts(newFacts);
